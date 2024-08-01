@@ -35,6 +35,7 @@ public class ProducerDemoKeys {
                 String key = "id_" + i;
                 String value = "hello world" + i;
 
+                //Producing with a key allows msgs with same key to be pushed to be same partition
                 ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, key, value);
 
                 //send data - asynchronous
