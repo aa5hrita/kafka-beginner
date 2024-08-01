@@ -27,38 +27,28 @@ public class ProducerDemo {
 
         //create producer
         KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
-        properties.setProperty("batch.size", "400");
 
         //create a producer record
-        for (int j = 0; j < 10; j++) { //Batch
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>("demo_java", " Message One ");
 
-            for (int i = 0; i < 30; i++) { //Messages in Batch
-                ProducerRecord<String, String> producerRecord = new ProducerRecord<>("demo_java", "Batch: " + j + " Message: " + i);
+        //send data
+        producer.send(producerRecord, new Callback() {
+            @Override
+            public void onCompletion(RecordMetadata recordMetadata, Exception e) {
+                //executed everytime a record is successfully sent of exception is thrown
+                if (e == null) {
+                    //the record is successfully sent
+                    log.info("received new metadata: " + "\n" +
+                            "Topic " + recordMetadata.topic() + "\n" +
+                            "Partition " + recordMetadata.partition() + "\n" +
+                            "Offset " + recordMetadata.offset() + "\n" +
+                            "Timestamp " + recordMetadata.timestamp());
+                } else {
+                    log.error("error while producing", e);
+                }
+            }
+        });
 
-                //send data
-                producer.send(producerRecord, new Callback() {
-                    @Override
-                    public void onCompletion(RecordMetadata recordMetadata, Exception e) {
-                        //executed everytime a record is successfully sent of exception is thrown
-                        if (e == null) {
-                            //the record is successfully sent
-                            log.info("received new metadata: " + "\n" +
-                                    "Topic " + recordMetadata.topic() + "\n" +
-                                    "Partition " + recordMetadata.partition() + "\n" +
-                                    "Offset " + recordMetadata.offset() + "\n" +
-                                    "Timestamp " + recordMetadata.timestamp());
-                        } else {
-                            log.error("error while producing", e);
-                        }
-                    }
-                });
-            }
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
         // flush and close the producer
         producer.flush(); // tells producer to send all data and block until done
         producer.close();
