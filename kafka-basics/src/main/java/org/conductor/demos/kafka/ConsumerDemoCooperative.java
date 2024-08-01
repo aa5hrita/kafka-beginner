@@ -32,6 +32,7 @@ public class ConsumerDemoCooperative {
         properties.setProperty("key.deserializer", StringDeserializer.class.getName());
         properties.setProperty("value.deserializer", StringDeserializer.class.getName());
 
+        //To allows consumers in a group to resume at the right offset, I need to set group.id
         properties.setProperty("group.id", groupId);
         properties.setProperty("auto.offset.reset", "earliest"); // none/earliest/latest
         properties.setProperty("partition.assignment.strategy", CooperativeStickyAssignor.class.getName());
